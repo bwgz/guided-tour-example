@@ -1,6 +1,5 @@
 <template>
     <div class="hello">
-        <GuidedTour :tour="tour" />
         <h1 id="one" tour-v-step="1">{{ msg }}</h1>
         <p>
             For a guide and recipes on how to configure / customize this project,<br />
@@ -62,6 +61,7 @@
             <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
             <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
         </ul>
+        <GuidedTour :tour="tour" />
     </div>
 </template>
 
@@ -78,16 +78,19 @@ const steps = [
         target: '[tour-v-step="1"]',
         title: "Step 1",
         content: "This is the first step",
+        placement: "top",
     },
     {
         target: '[tour-v-step="2"]',
         title: "Step 2",
         content: "This is the second step",
+        placement: "right",
     },
     {
         target: '[tour-v-step="3"]',
         title: "Step 3",
         content: "This is the third step",
+        placement: "left",
     },
 ];
 

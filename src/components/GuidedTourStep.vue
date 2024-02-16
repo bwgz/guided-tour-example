@@ -2,6 +2,7 @@
 <!-- eslint-disable @typescript-eslint/no-empty-function -->
 <script setup lang="ts">
 import { computed, defineProps, onMounted, ref, watch } from "vue";
+import { arrow, autoUpdate, useFloating } from "@floating-ui/vue";
 
 const mounted = ref(false);
 
@@ -31,7 +32,16 @@ const props = defineProps({
     isLast: Boolean,
 });
 
+const floating = ref(null);
+const floatingArrow = ref(null);
+
 const target = computed(() => mounted.value && document.querySelector(props.step.target));
+
+const { floatingStyles, isPositioned, middlewareData } = useFloating(target, floating, {
+    placement: props.step.placement,
+    whileElementsMounted: autoUpdate,
+    middleware: [arrow({ element: floatingArrow })],
+});
 
 const next = (payload: MouseEvent): void => {
     props.next();
@@ -48,34 +58,49 @@ const finish = (payload: MouseEvent): void => {
 watch(target, (value) => {
     console.log("target", value);
     if (value) {
-        value.scrollIntoView({ behavior: "smooth" });
+        //value.scrollIntoView({ behavior: "smooth" });
     }
+});
+
+watch(isPositioned, (isPositioned) => {
+  if (isPositioned) {
+    target.value.focus();
+    target.value.scrollIntoView();
+  }
 });
 
 onMounted(() => {
     console.log("tour step: mounted");
     mounted.value = true;
-}); 
+});
 </script>
 
 <template>
-    <div class="v-step">
+    <div v-if="mounted" ref="floating" class="v-step" :style="floatingStyles">
         <div v-if="step.title" v-html="step.title" class="v-step__header"></div>
         <div v-if="step.content" v-html="step.content" class="v-step__content"></div>
         <div class="v-step__buttons">
             <button v-if="!isLast" @click.prevent="finish" class="v-step__button v-step__button-skip">
                 {{ options.buttons.skip.label }}
             </button>
-            <button v-if="!isFirst" @click.prevent="previous" class="v-step__button v-step__button-skip">
+            <button v-if="!isFirst" @click.prevent="previous" class="v-step__button v-step__button-previous">
                 {{ options.buttons.previous.label }}
             </button>
-            <button v-if="!isLast" @click.prevent="next" class="v-step__button v-step__button-skip">
+            <button v-if="!isLast" @click.prevent="next" class="v-step__button v-step__button-next">
                 {{ options.buttons.next.label }}
             </button>
-            <button v-if="isLast" @click.prevent="finish" class="v-step__button v-step__button-skip">
+            <button v-if="isLast" @click.prevent="finish" class="v-step__button v-step__button-finish">
                 {{ options.buttons.finish.label }}
             </button>
         </div>
+        <div 
+            ref="floatingArrow"
+            :style="{
+                position: 'absolute',
+                left: middlewareData.arrow?.x != null ? `${middlewareData.arrow.x}px` : '',
+                top: middlewareData.arrow?.y != null ? `${middlewareData.arrow.y}px` : '',
+            }"
+        ></div>
     </div>
 </template>
 

@@ -43,25 +43,22 @@ watch(target, (value) => {
 onMounted(() => {
     console.log("tour: mounted");
     mounted.value = true;
-}); 
-
+});
 </script>
 
 <template>
-    <Teleport v-if="mounted" :to="target">
-        <div class="v-tour">
-            <GuidedTourStep
-                v-if="tour.steps[index]"
-                :options="tour.options"
-                :step="step"
-                :isFirst="isFirst"
-                :isLast="isLast"
-                :next="next"
-                :previous="previous"
-                :finish="finish"
-            ></GuidedTourStep>
-        </div>
-    </Teleport>
+    <div v-if="mounted" class="v-tour">
+        <GuidedTourStep
+            v-if="tour.steps[index]"
+            :options="tour.options"
+            :step="step"
+            :isFirst="isFirst"
+            :isLast="isLast"
+            :next="next"
+            :previous="previous"
+            :finish="finish"
+        ></GuidedTourStep>
+    </div>
 </template>
 
 <style scoped>
