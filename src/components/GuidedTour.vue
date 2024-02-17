@@ -14,16 +14,16 @@ const props = defineProps({
 
 const index = ref();
 const step = ref();
-const reference = ref();
-const floating = ref();
-const open = ref(false);
-const placement = ref();
-const side = ref();
+const target = ref();   // target is the reference to the element that the tour is currently focused on
+const floating = ref(); // floating is the reference to the floating element that is positioned around the target
+const open = ref(false);// open is a boolean that determines whether the floating element is visible
+const placement = ref();// placement is how the floating element
+const placementArrow = ref();
 const floatingArrow = ref();
 
-const { floatingStyles, isPositioned, middlewareData } = useFloating(reference, floating, {
+const { floatingStyles, isPositioned, middlewareData } = useFloating(target, floating, {
     middleware: [
-        offset(10),
+        offset(15),
         shift(),
         flip({
             fallbackPlacements: ["right", "top", "left"],
@@ -34,6 +34,7 @@ const { floatingStyles, isPositioned, middlewareData } = useFloating(reference, 
             element: floatingArrow,
         }),
     ],
+    open,
     placement,
     whileElementsMounted: autoUpdate,
 });
@@ -43,8 +44,8 @@ const isLast = computed(() => index.value === props.tour.steps.length - 1);
 
 watch(isPositioned, (value) => {
     console.log("isPositioned", value);
-    reference.value.focus();
-    reference.value.scrollIntoView();
+    target.value.focus();
+    target.value.scrollIntoView();
 });
 
 const next = (payload: MouseEvent): void => {
@@ -69,7 +70,7 @@ watch(index, (value) => {
     }
 });
 
-const sideMap: Record<string, string> = {
+const placementArrowMap: Record<string, string> = {
     top: "bottom",
     bottom: "top",
     left: "right",
@@ -79,25 +80,27 @@ const sideMap: Record<string, string> = {
 watch(step, (value) => {
     console.log("watch step", value);
     if (value !== undefined) {
-        reference.value = document.querySelector(value.target);
+        target.value = document.querySelector(value.target);
         placement.value = value.placement;
-        side.value = sideMap[placement.value];
+        placementArrow.value = placementArrowMap[placement.value];
     }
 });
 
-watch(reference, (value) => {
+watch(target, (value) => {
     console.log("watch reference", value);
+    if (value) {
+        value.scrollIntoView({ behavior: "smooth" });
+    }
 });
 
 onMounted(() => {
     console.log("onMounted");
     index.value = 0;
 });
-
 </script>
 
 <template>
-    <div id="reference">
+    <div id="target">
         <div ref="floating" class="v-tour" :style="floatingStyles">
             <div v-if="step" class="v-step">
                 <div v-html="step.title" class="v-step__header"></div>
@@ -125,7 +128,7 @@ onMounted(() => {
                         background: '#50596c',
                         left: middlewareData.arrow?.x != null ? `${middlewareData.arrow.x}px` : '',
                         top: middlewareData.arrow?.y != null ? `${middlewareData.arrow.y}px` : '',
-                        [side]: '-10px',
+                        [placementArrow]: '-10px',
                         transform: 'rotate(45deg)',
                     }"
                 ></div>
