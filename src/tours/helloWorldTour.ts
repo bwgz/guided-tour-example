@@ -4,7 +4,7 @@ const steps = [
     {
         target: '[hello-world-tour-step="1"]',
         title: "Step 1",
-        content: "This is the first step",
+        content: "<i class=\"fa-solid fa-star\"></i> This is the first step",
         placement: "top",
     },
     {

@@ -21,7 +21,7 @@ const placement = ref(); // placement is how the floating element
 const placementArrow = ref();
 const floatingArrow = ref();
 
-const { floatingStyles, isPositioned, middlewareData } = useFloating(target, floating, {
+const { floatingStyles, middlewareData } = useFloating(target, floating, {
     middleware: [
         offset(15),
         arrow({
@@ -35,12 +35,6 @@ const { floatingStyles, isPositioned, middlewareData } = useFloating(target, flo
 
 const isFirst = computed(() => index.value === 0);
 const isLast = computed(() => index.value === props.tour.steps.length - 1);
-
-watch(isPositioned, (value) => {
-    console.log("isPositioned", value);
-    target.value.focus();
-    target.value.scrollIntoView();
-});
 
 const next = (payload: MouseEvent): void => {
     console.log("tour: next", payload);
@@ -86,7 +80,7 @@ watch(step, (value) => {
 watch(target, (value) => {
     console.log("watch reference", value);
     if (value) {
-        value.scrollIntoView({ behavior: "smooth" });
+        value.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
     }
 });
 
@@ -198,17 +192,17 @@ body.v-tour--active {
 
 .v-step__button {
     background: transparent;
-    border: 0.05rem solid white;
-    border-radius: 0.1rem;
+    border: 1px solid white;
+    border-radius: 4px;
     color: white;
     cursor: pointer;
     display: inline-block;
-    font-size: 0.8rem;
-    height: 1.8rem;
+    font-size: 12px;
+    height: 24px;
     line-height: 1rem;
     outline: none;
     margin: 0 0.2rem;
-    padding: 0.35rem 0.4rem;
+    padding: 3px 16px;
     text-align: center;
     text-decoration: none;
     transition: all 0.2s ease;
@@ -216,8 +210,8 @@ body.v-tour--active {
     white-space: nowrap;
 
     &:hover {
-        background-color: rgba(white, 0.95);
-        color: #50596c;
+        background-color: #005288;
+        color: white;
     }
 }
 </style>
