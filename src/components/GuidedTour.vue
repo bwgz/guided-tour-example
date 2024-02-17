@@ -5,19 +5,19 @@ import { computed, defineProps, onMounted, ref, watch } from "vue";
 import { offset, arrow, shift, flip, autoUpdate, useFloating } from "@floating-ui/vue";
 
 const props = defineProps({
-    name: String,
     tour: {
         type: Object,
         default: () => {},
     },
 });
 
-const index = ref();
-const step = ref();
-const target = ref();   // target is the reference to the element that the tour is currently focused on
+const state = ref<Record<string, string | number | boolean | undefined>>({});
+const index = ref(); // index is the current step that the tour is focused on
+const step = ref(); // step is the current step that the tour is focused on
+const target = ref(); // target is the reference to the element that the tour is currently focused on
 const floating = ref(); // floating is the reference to the floating element that is positioned around the target
-const open = ref(false);// open is a boolean that determines whether the floating element is visible
-const placement = ref();// placement is how the floating element
+const open = ref(false); // open is a boolean that determines whether the floating element is visible
+const placement = ref(); // placement is how the floating element
 const placementArrow = ref();
 const floatingArrow = ref();
 
@@ -67,6 +67,9 @@ watch(index, (value) => {
     console.log("watch index", value);
     if (value !== undefined) {
         step.value = props.tour.steps[value];
+        localStorage.setItem(props.tour.name, JSON.stringify({ index: value }));
+    } else {
+        state.value.index = undefined;
     }
 });
 
@@ -78,7 +81,7 @@ const placementArrowMap: Record<string, string> = {
 };
 
 watch(step, (value) => {
-    console.log("watch step", value);
+    console.log("watch step", JSON.stringify(value));
     if (value !== undefined) {
         target.value = document.querySelector(value.target);
         placement.value = value.placement;
@@ -93,9 +96,26 @@ watch(target, (value) => {
     }
 });
 
+watch(state, (value) => {
+    console.log("watch state", value);
+    if (value) {
+        open.value = true;
+    }
+});
+
 onMounted(() => {
     console.log("onMounted");
-    index.value = 0;
+    const item = localStorage.getItem(props.tour.name);
+    console.log("onMounted - item", item);
+    if (item) {
+        const json = JSON.parse(item);
+        console.log("onMounted - index", json.index);
+        if (json !== undefined) {
+            index.value = json.index;
+        }
+    } else {
+        index.value = 0;
+    }
 });
 </script>
 
@@ -106,16 +126,16 @@ onMounted(() => {
                 <div v-html="step.title" class="v-step__header"></div>
                 <div v-html="step.content" class="v-step__content"></div>
                 <div class="v-step__buttons">
-                    <button v-if="!isLast" @click.prevent="finish" class="v-step__button v-step__button-skip">
+                    <button v-if="!isLast" @click.prevent="finish" class="v-step__button">
                         {{ tour.options.buttons.skip.label }}
                     </button>
-                    <button v-if="!isFirst" @click.prevent="previous" class="v-step__button v-step__button-previous">
+                    <button v-if="!isFirst" @click.prevent="previous" class="v-step__button">
                         {{ tour.options.buttons.previous.label }}
                     </button>
-                    <button v-if="!isLast" @click.prevent="next" class="v-step__button v-step__button-next">
+                    <button v-if="!isLast" @click.prevent="next" class="v-step__button">
                         {{ tour.options.buttons.next.label }}
                     </button>
-                    <button v-if="isLast" @click.prevent="finish" class="v-step__button v-step__button-finish">
+                    <button v-if="isLast" @click.prevent="finish" class="v-step__button">
                         {{ tour.options.buttons.finish.label }}
                     </button>
                 </div>
@@ -125,7 +145,7 @@ onMounted(() => {
                         position: 'absolute',
                         width: '20px',
                         height: '20px',
-                        background: '#50596c',
+                        background: '#0063a3',
                         left: middlewareData.arrow?.x != null ? `${middlewareData.arrow.x}px` : '',
                         top: middlewareData.arrow?.y != null ? `${middlewareData.arrow.y}px` : '',
                         [placementArrow]: '-10px',
@@ -157,7 +177,7 @@ body.v-tour--active {
 }
 
 .v-step {
-    background: #50596c; /* #ffc107, #35495e */
+    background: #0063a3; /* #ffc107, #35495e */
     color: white;
     max-width: 320px;
     border-radius: 3px;
@@ -167,66 +187,13 @@ body.v-tour--active {
     pointer-events: auto;
     text-align: center;
     z-index: 10000;
-
-    &--sticky {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-
-        & .v-step__arrow {
-            display: none;
-        }
-    }
 }
 
-.v-step__arrow,
-.v-step__arrow::before {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background: inherit;
-}
-
-.v-step__arrow {
-    visibility: hidden;
-
-    &--dark {
-        &:before {
-            background: #454d5d;
-        }
-    }
-}
-
-.v-step__arrow::before {
-    visibility: visible;
-    content: "";
-    transform: rotate(45deg);
-    margin-left: -5px;
-}
-
-.v-step[data-popper-placement^="top"] > .v-step__arrow {
-    bottom: -5px;
-}
-
-.v-step[data-popper-placement^="bottom"] > .v-step__arrow {
-    top: -5px;
-}
-
-.v-step[data-popper-placement^="right"] > .v-step__arrow {
-    left: -5px;
-}
-
-.v-step[data-popper-placement^="left"] > .v-step__arrow {
-    right: -5px;
-}
-
-/* Custom */
 
 .v-step__header {
     margin: -1rem -1rem 0.5rem;
     padding: 0.5rem;
-    background-color: #454d5d;
+    background-color: #004f83;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
 }
