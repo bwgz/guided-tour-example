@@ -6,7 +6,7 @@ const steps: TourStep[] = [
     {
         target: '[hello-world-tour-step="1"]',
         title: "<div><img src=\"./sketchup.svg\" style=\"vertical-align:middle\" height=24/> <span>SketchUp</span></div>",
-        content: "This is the first step",
+        content: "Just imagine all the things you can do with SketchUp!",
         placement: "top",
         beacon: true,
     },
