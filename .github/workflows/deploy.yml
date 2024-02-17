@@ -48,7 +48,7 @@ jobs:
 
       - name: build
         run: |
-          npm mkdir ./dist/public
+          mkdir ./dist/public
           mv ./dist/css ./dist/public/css
           mv ./dist/js ./dist/public/js
 
