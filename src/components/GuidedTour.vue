@@ -19,6 +19,7 @@ const floating = ref(); // floating is the reference to the floating element tha
 const open = ref(false); // open is a boolean that determines whether the floating element is visible
 const placement = ref(); // placement is how the floating element
 const placementArrow = ref();
+const placementArrowColor = ref();
 const floatingArrow = ref();
 
 const { floatingStyles, middlewareData } = useFloating(target, floating, {
@@ -68,12 +69,20 @@ const placementArrowMap: Record<string, string> = {
     right: "left",
 };
 
+const placementArrowColorMap: Record<string, string> = {
+    top: "#0063a3",
+    bottom: "#004f83",
+    left: "#0063a3",
+    right: "#0063a3",
+};
+
 watch(step, (value) => {
     console.log("watch step", JSON.stringify(value));
     if (value !== undefined) {
         target.value = document.querySelector(value.target);
         placement.value = value.placement;
         placementArrow.value = placementArrowMap[placement.value];
+        placementArrowColor.value = placementArrowColorMap[placement.value];
     }
 });
 
@@ -133,11 +142,12 @@ onMounted(() => {
                         position: 'absolute',
                         width: '20px',
                         height: '20px',
-                        background: '#0063a3',
+                        background: placementArrowColor,
                         left: middlewareData.arrow?.x != null ? `${middlewareData.arrow.x}px` : '',
                         top: middlewareData.arrow?.y != null ? `${middlewareData.arrow.y}px` : '',
                         [placementArrow]: '-10px',
                         transform: 'rotate(45deg)',
+                        zIndex: -1
                     }"
                 ></div>
             </div>
@@ -146,22 +156,8 @@ onMounted(() => {
 </template>
 
 <style scoped>
-body.v-tour--active {
-    pointer-events: none;
-}
-
 .v-tour {
     pointer-events: auto;
-}
-
-.v-tour__target--highlighted {
-    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.4);
-    pointer-events: auto;
-    z-index: 9999;
-}
-
-.v-tour__target--relative {
-    position: relative;
 }
 
 .v-step {
@@ -174,9 +170,7 @@ body.v-tour--active {
     padding: 1rem;
     pointer-events: auto;
     text-align: center;
-    z-index: 10000;
 }
-
 
 .v-step__header {
     margin: -1rem -1rem 0.5rem;

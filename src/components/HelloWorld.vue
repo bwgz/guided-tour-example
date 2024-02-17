@@ -49,7 +49,7 @@
             <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
             <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
         </ul>
-        <h3>Junk</h3>
+        <h3 hello-world-tour-step="4">Junk</h3>
         <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
             dolore magna aliqua. Imperdiet massa tincidunt nunc pulvinar sapien. Pellentesque habitant morbi tristique
