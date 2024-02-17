@@ -1,16 +1,16 @@
 
 export type TourOptions = {
     buttons: {
-        skip: {
+        skip?: {
             label?: string,
         },
-        previous: {
+        previous?: {
             label?: string,
         },
-        next: {
+        next?: {
             label?: string,
         },
-        finish: {
+        finish?: {
             label?: string,
         },
     },

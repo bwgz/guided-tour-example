@@ -2,7 +2,7 @@
 
 <script setup lang="ts">
 import { computed, defineProps, onMounted, ref, watch } from "vue";
-import { offset, arrow, shift, flip, autoUpdate, useFloating } from "@floating-ui/vue";
+import { offset, arrow, autoUpdate, useFloating } from "@floating-ui/vue";
 
 const props = defineProps({
     tour: {
@@ -11,20 +11,50 @@ const props = defineProps({
     },
 });
 
+/**
+ * State of the tour.
+ */
 const state = ref<Record<string, string | number | boolean | undefined>>({});
-const index = ref(); // index is the current step that the tour is focused on
-const step = ref(); // step is the current step that the tour is focused on
-const target = ref(); // target is the reference to the element that the tour is currently focused on
-const floating = ref(); // floating is the reference to the floating element that is positioned around the target
-const open = ref(false); // open is a boolean that determines whether the floating element is visible
-const placement = ref(); // placement is how the floating element
+/*
+ * Index of the current step. When the tour is finished or skipped it is set to
+ * number of steps. 
+ */
+const index = ref();
+/*
+ * Current step of the tour. Based on the index. Will be undefined if the index 
+ * exceeds the number of steps.
+ */
+const step = ref(); 
+/*
+ * Reference to the element that the tour is currently focused on.
+ */
+const target = ref();
+/*
+ * Reference to the floating element that is positioned around the target.
+ */
+const floating = ref();
+/*
+ * Whether the floating element is visible.
+ */
+const open = ref(false);
+/*
+ * Placement of the floating element. Take from the step.
+ */
+const placement = ref();
 const placementArrow = ref();
 const placementArrowColor = ref();
 const floatingArrow = ref();
 
-const { floatingStyles, middlewareData } = useFloating(target, floating, {
+const stepHasArrow = computed(() => (step.value?.arrow !== undefined ? step.value.arrow : props.tour?.options?.arrow));
+const stepHasBeacon = computed(() =>
+    step.value?.beacon !== undefined ? step.value.beacon : props.tour?.options?.beacon
+);
+
+const offsetValue = () => (stepHasBeacon.value ? 50 : 20);
+
+const { floatingStyles, middlewareData, update } = useFloating(target, floating, {
     middleware: [
-        offset(15),
+        offset(offsetValue),
         arrow({
             element: floatingArrow,
         }),
@@ -33,6 +63,8 @@ const { floatingStyles, middlewareData } = useFloating(target, floating, {
     placement,
     whileElementsMounted: autoUpdate,
 });
+
+console.log("floatingStyles", floatingStyles.value);
 
 const isFirst = computed(() => index.value === 0);
 const isLast = computed(() => index.value === props.tour.steps.length - 1);
@@ -83,6 +115,7 @@ watch(step, (value) => {
         placement.value = value.placement;
         placementArrow.value = placementArrowMap[placement.value];
         placementArrowColor.value = placementArrowColorMap[placement.value];
+        update();
     }
 });
 
@@ -117,39 +150,72 @@ onMounted(() => {
 </script>
 
 <template>
-    <div id="target">
+    <div>
         <div ref="floating" class="v-tour" :style="floatingStyles">
             <div v-if="step" class="v-step">
-                <div v-html="step.title" class="v-step__header"></div>
-                <div v-html="step.content" class="v-step__content"></div>
-                <div class="v-step__buttons">
-                    <button v-if="!isLast" @click.prevent="finish" class="v-step__button">
-                        {{ tour.options.buttons.skip.label }}
-                    </button>
-                    <button v-if="!isFirst" @click.prevent="previous" class="v-step__button">
-                        {{ tour.options.buttons.previous.label }}
-                    </button>
-                    <button v-if="!isLast" @click.prevent="next" class="v-step__button">
-                        {{ tour.options.buttons.next.label }}
-                    </button>
-                    <button v-if="isLast" @click.prevent="finish" class="v-step__button">
-                        {{ tour.options.buttons.finish.label }}
-                    </button>
+                <div v-if="step.title" v-html="step.title" class="v-step__header"></div>
+                <div v-if="step.content" v-html="step.content" class="v-step__content"></div>
+                <div v-if="step.title || step.content">
+                    <div class="v-step__buttons">
+                        <button
+                            v-if="tour.options.buttons.skip?.label && !isLast"
+                            @click.prevent="finish"
+                            class="v-step__button"
+                        >
+                            {{ tour.options.buttons.skip.label }}
+                        </button>
+                        <button
+                            v-if="tour.options.buttons.previous?.label && !isFirst"
+                            @click.prevent="previous"
+                            class="v-step__button"
+                        >
+                            {{ tour.options.buttons.previous.label }}
+                        </button>
+                        <button
+                            v-if="tour.options.buttons.next?.label && !isLast"
+                            @click.prevent="next"
+                            class="v-step__button"
+                        >
+                            {{ tour.options.buttons.next.label }}
+                        </button>
+                        <button
+                            v-if="tour.options.buttons.finish?.label && isLast"
+                            @click.prevent="finish"
+                            class="v-step__button"
+                        >
+                            {{ tour.options.buttons.finish.label }}
+                        </button>
+                    </div>
+                    <div
+                        v-if="stepHasArrow"
+                        ref="floatingArrow"
+                        :style="{
+                            position: 'absolute',
+                            width: '20px',
+                            height: '20px',
+                            background: placementArrowColor,
+                            left: middlewareData.arrow?.x != null ? `${middlewareData.arrow.x}px` : '',
+                            top: middlewareData.arrow?.y != null ? `${middlewareData.arrow.y}px` : '',
+                            [placementArrow]: '-10px',
+                            transform: 'rotate(45deg)',
+                            zIndex: -1,
+                        }"
+                    ></div>
+                    <span
+                        v-if="stepHasBeacon"
+                        class="dot"
+                        :style="{
+                            position: 'absolute',
+                            width: '20px',
+                            height: '20px',
+                            left: middlewareData.arrow?.x != null ? `${middlewareData.arrow.x}px` : '',
+                            top: middlewareData.arrow?.y != null ? `${middlewareData.arrow.y}px` : '',
+                            [placementArrow]: '-40px',
+                            transform: 'rotate(45deg)',
+                            zIndex: 1,
+                        }"
+                    ></span>
                 </div>
-                <div
-                    ref="floatingArrow"
-                    :style="{
-                        position: 'absolute',
-                        width: '20px',
-                        height: '20px',
-                        background: placementArrowColor,
-                        left: middlewareData.arrow?.x != null ? `${middlewareData.arrow.x}px` : '',
-                        top: middlewareData.arrow?.y != null ? `${middlewareData.arrow.y}px` : '',
-                        [placementArrow]: '-10px',
-                        transform: 'rotate(45deg)',
-                        zIndex: -1
-                    }"
-                ></div>
             </div>
         </div>
     </div>
@@ -206,6 +272,40 @@ onMounted(() => {
     &:hover {
         background-color: #005288;
         color: white;
+    }
+}
+
+.dot {
+    background-color: red;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: block;
+    z-index: 1;
+    position: absolute;
+}
+.dot::before {
+    background-color: red;
+    content: "";
+    top: calc(50% - 5px);
+    left: calc(50% - 5px);
+    width: 10px;
+    height: 10px;
+    opacity: 1;
+    border-radius: 50%;
+    position: absolute;
+    animation: burst-animation 1s infinite;
+    animation-fill-mode: forwards;
+    z-index: 0;
+}
+@keyframes burst-animation {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(4);
     }
 }
 </style>

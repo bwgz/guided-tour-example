@@ -1,9 +1,17 @@
+<script setup lang="ts">
+import { useTour} from "@/tours/tours";
+import GuidedTour from "@/components/GuidedTour.vue";
+
+const tour = useTour("new-about-page-tour");
+</script>
+
 <template>
-  <nav>
+  <nav  hello-world-tour-step="5">
     <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+    <router-link to="/about"><span new-about-page-tour-step="1">About</span></router-link>
   </nav>
   <router-view/>
+  <GuidedTour v-if="tour" :tour="tour" />
 </template>
 
 <style>
