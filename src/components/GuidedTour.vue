@@ -24,12 +24,6 @@ const floatingArrow = ref();
 const { floatingStyles, isPositioned, middlewareData } = useFloating(target, floating, {
     middleware: [
         offset(15),
-        shift(),
-        flip({
-            fallbackPlacements: ["right", "top", "left"],
-            fallbackStrategy: "initialPlacement",
-            flipAlignment: false,
-        }),
         arrow({
             element: floatingArrow,
         }),
