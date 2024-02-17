@@ -39,8 +39,8 @@ const target = computed(() => mounted.value && document.querySelector(props.step
 
 const { floatingStyles, isPositioned, middlewareData } = useFloating(target, floating, {
     placement: props.step.placement,
-    whileElementsMounted: autoUpdate,
     middleware: [arrow({ element: floatingArrow })],
+    whileElementsMounted: autoUpdate,
 });
 
 const next = (payload: MouseEvent): void => {

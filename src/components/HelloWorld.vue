@@ -6,7 +6,7 @@
             check out the
             <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
         </p>
-        <h3 tour-v-step="2">Installed CLI Plugins</h3>
+        <h3>Installed CLI Plugins</h3>
         <ul>
             <li>
                 <a
@@ -32,7 +32,7 @@
                     >eslint</a
                 >
             </li>
-            <li>
+            <li tour-v-step="2">
                 <a
                     href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-typescript"
                     target="_blank"
@@ -41,7 +41,7 @@
                 >
             </li>
         </ul>
-        <h3 tour-v-step="3">Essential Links</h3>
+        <h3>Essential Links</h3>
         <ul>
             <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
             <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
@@ -59,7 +59,7 @@
                 >
             </li>
             <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-            <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
+            <li tour-v-step="3"><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
         </ul>
         <GuidedTour :tour="tour" />
     </div>
@@ -84,13 +84,13 @@ const steps = [
         target: '[tour-v-step="2"]',
         title: "Step 2",
         content: "This is the second step",
-        placement: "right",
+        placement: "left",
     },
     {
         target: '[tour-v-step="3"]',
         title: "Step 3",
         content: "This is the third step",
-        placement: "left",
+        placement: "right",
     },
 ];
 
