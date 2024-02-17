@@ -2,7 +2,7 @@
 
 <script setup lang="ts">
 import { computed, defineProps, onMounted, ref, watch } from "vue";
-import { arrow, autoUpdate, useFloating } from "@floating-ui/vue";
+import { offset, arrow, shift, flip, autoUpdate, useFloating } from "@floating-ui/vue";
 
 const props = defineProps({
     name: String,
@@ -18,11 +18,22 @@ const reference = ref();
 const floating = ref();
 const open = ref(false);
 const placement = ref();
+const side = ref();
 const floatingArrow = ref();
 
 const { floatingStyles, isPositioned, middlewareData } = useFloating(reference, floating, {
-    middleware: [arrow({ element: floatingArrow })],
-    open,
+    middleware: [
+        offset(10),
+        shift(),
+        flip({
+            fallbackPlacements: ["right", "top", "left"],
+            fallbackStrategy: "initialPlacement",
+            flipAlignment: false,
+        }),
+        arrow({
+            element: floatingArrow,
+        }),
+    ],
     placement,
     whileElementsMounted: autoUpdate,
 });
@@ -58,11 +69,19 @@ watch(index, (value) => {
     }
 });
 
+const sideMap: Record<string, string> = {
+    top: "bottom",
+    bottom: "top",
+    left: "right",
+    right: "left",
+};
+
 watch(step, (value) => {
     console.log("watch step", value);
     if (value !== undefined) {
         reference.value = document.querySelector(value.target);
         placement.value = value.placement;
+        side.value = sideMap[placement.value];
     }
 });
 
@@ -74,12 +93,13 @@ onMounted(() => {
     console.log("onMounted");
     index.value = 0;
 });
+
 </script>
 
 <template>
-    <div v-if="step" id="reference">
+    <div id="reference">
         <div ref="floating" class="v-tour" :style="floatingStyles">
-            <div class="v-step">
+            <div v-if="step" class="v-step">
                 <div v-html="step.title" class="v-step__header"></div>
                 <div v-html="step.content" class="v-step__content"></div>
                 <div class="v-step__buttons">
@@ -100,8 +120,13 @@ onMounted(() => {
                     ref="floatingArrow"
                     :style="{
                         position: 'absolute',
+                        width: '20px',
+                        height: '20px',
+                        background: '#50596c',
                         left: middlewareData.arrow?.x != null ? `${middlewareData.arrow.x}px` : '',
                         top: middlewareData.arrow?.y != null ? `${middlewareData.arrow.y}px` : '',
+                        [side]: '-10px',
+                        transform: 'rotate(45deg)',
                     }"
                 ></div>
             </div>
