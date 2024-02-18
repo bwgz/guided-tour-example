@@ -6,7 +6,7 @@ const tour = useTour("new-about-page-tour");
 </script>
 
 <template>
-  <nav  hello-world-tour-step="5">
+  <nav hello-world-tour-step="5">
     <router-link to="/">Home</router-link> |
     <router-link to="/about"><span new-about-page-tour-step="1">About</span></router-link>
   </nav>
