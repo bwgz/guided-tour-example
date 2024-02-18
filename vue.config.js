@@ -1,6 +1,6 @@
 const { defineConfig } = require("@vue/cli-service");
 module.exports = defineConfig({
-    publicPath: process.env.NODE_ENV === "production" ? "/guided-tour-example/" : "http://127.0.0.1:8080",
+    publicPath: process.env.NODE_ENV === "production" ? "/guided-tour-example/" : "/",
     transpileDependencies: true,
     css: {
         extract: {
