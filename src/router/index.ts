@@ -2,6 +2,8 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 
 const routes: Array<RouteRecordRaw> = [
+  // will match everything and put it under `$route.params.pathMatch`
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: HomeView },
   {
     path: '/',
     name: 'home',
