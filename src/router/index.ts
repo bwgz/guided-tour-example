@@ -3,7 +3,7 @@ import HomeView from '@/views/HomeView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   // will match everything and put it under `$route.params.pathMatch`
-  { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import(/* webpackChunkName: "about" */ '../views/NotFound.vue') },
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import(/* webpackChunkName: "notfound" */ '../views/NotFound.vue') },
   {
     path: '/',
     name: 'home',
