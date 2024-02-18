@@ -9,6 +9,6 @@ const clickHandler = () => {
 <template>
     <div class="about">
         <h1>This is an about page</h1>
-        <button @click="clickHandler">Button</button>
+        <button @click="clickHandler">Reset Tours</button>
     </div>
 </template>
