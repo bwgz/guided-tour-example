@@ -46,8 +46,11 @@ jobs:
       - name: build
         run: npm run build
 
-      - name: build
+      - name: touch
         run: touch ./dist/.nojekyll
+
+      - name: find
+        run: find ./dist
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
